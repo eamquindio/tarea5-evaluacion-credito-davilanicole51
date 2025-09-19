@@ -41,7 +41,7 @@ public class EvaluacionCredito {
      * @return Tasa mensual en porcentaje
      */
     public double calcularTasaMensual(double tasaNominalAnual) {
-        return 0;
+        return tasaNominalAnual / 12.0;
     }
     
     /**
@@ -53,7 +53,15 @@ public class EvaluacionCredito {
      * @return Valor de la cuota mensual en pesos
      */
     public double calcularCuotaMensual(double tasaNominalAnual, int plazoMeses) {
-        return 0;
+        double tasaMensual = calcularTasaMensual(tasaNominalAnual)/ 100;
+        if (tasaNominalAnual == 0) {
+            return valorCreditoSolicitado / plazoMeses;
+        }
+    double numerador = valorCreditoSolicitado * tasaMensual* Math.pow(1 + tasaMensual,  plazoMeses);
+    double denominador = Math.pow(1 + tasaMensual, plazoMeses)-1;
+    return numerador / denominador;
+
+
     }
     
     /**
@@ -67,11 +75,29 @@ public class EvaluacionCredito {
      * @return true si el crédito es aprobado, false si es rechazado
      */
     public boolean evaluarAprobacion(double tasaNominalAnual, int plazoMeses) {
-
-        
-        return false;
+        double cuotaMensual = calcularCuotaMensual(tasaNominalAnual, plazoMeses);
+        boolean aprobado = false;
+        if (puntajeCredito < 500) {
+            return false;
+        }else if(puntajeCredito<=700){
+            if (tieneCodedor)
+            if (cuotaMensual <= 0.25 * ingresosMensuales) {
+                aprobado = true;
+            } else{
+                aprobado = false;
+            }
+        } else {
+            if (numeroCreditosActivos < 2 && puntajeCredito >700) {
+                if (cuotaMensual <= 0.3 * ingresosMensuales) {
+                    aprobado = true;
+                } else {
+                    aprobado = false;
+                }
+            }
+        }
+        return aprobado;
     }
-    
+
     /**
      * Obtiene el nombre del solicitante.
      * @return Nombre completo del solicitante
